@@ -23,7 +23,7 @@
   (gen/not-empty
    (gen/such-that (fn [v] (and (-> v (str/join) count (<= 253))
                                (->> v first #{\. \- \0 \1 \2 \3 \4 \5 \6 \7 \8 \9} not)))
-                  (gen/fmap (partial str/join ".") (gen/vector (host-name-string 1 63)))
+                  (gen/fmap (partial str/join ".") (gen/vector (host-name-string 1 63) 1 4))
                   100)))
 
 (def email-local-part
@@ -45,6 +45,15 @@
   (gen/let [name-part email-local-part
             domain-part host-name]
     (str name-part "@" domain-part)))
+
+(defn custom-email
+  "Returns an email generator which based on degenerate.core/email but modified accordign to optional parameters.
+  tlds - list of top level domains, one of which will be appended to the email"
+  [& {:keys [tlds max-length]}]
+  (gen/let [name-part email-local-part
+            domain-part host-name
+            tld (if (empty? tlds) (gen/return nil) (gen/fmap (partial str ".") (gen/elements tlds)))]
+    (str name-part "@" domain-part tld)))
 
 (def url
   (gen/let [protocol (gen/one-of [(gen/return "http") (gen/return "https")])
