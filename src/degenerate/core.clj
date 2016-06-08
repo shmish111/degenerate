@@ -131,7 +131,6 @@
   (map->generator {:mandatory-key gen/string (optional-key :a-different-key) gen/int}"
   [m]
   (gen/fmap #(->> %
-                  (remove empty?)
                   flatten
                   (apply hash-map))
             (apply gen/tuple
