@@ -69,7 +69,7 @@
   (gen/fmap cheshire/encode gen/any))                       ;; gen/any only generates maps, lists and vectors
 
 (def finite-double
-  (gen/such-that #(Double/isFinite %) gen/double))
+  (gen/such-that #(not (Double/isInfinite %)) gen/double))
 
 (def currency
   "generates a string that is a double with 2 decimal places"
