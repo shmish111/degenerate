@@ -61,7 +61,7 @@
     (str protocol "://" host)))
 
 (def clojure-hash-map
-  "clojure map generator"
+  "random clojure map generator"
   (gen/such-that map? gen/any 20))
 
 (def json
@@ -88,3 +88,55 @@
   [& {:keys [since until format]}]
   (gen/let [^Long n (gen/choose (or since 0) (or until (.getTime (Date.))))]
     (tf/unparse (tf/formatters (or format :date-time-no-ms)) (tc/from-date (Date. n)))))
+
+(defn str
+  "Returns a string generator based on various options
+  (gen/generate (str)) => \"some crazy string based on gen/char\"
+  (gen/generate (str :fixed-length 22)) => \"a string of lenghth 22\"
+  (gen/generate (str :max-length 50)) => \"a string between 0 and 50 chars\"
+  (gen/generate (str :min-lenght 5)) => \"a string between 5 and MAX_INTEGER chars\"
+  (gen/generate (str :min-lenght 5 :max-length 50)) => \"a string between 5 and 50 chars\"
+  (gen/generate (str :char-gen gen/char-alphanumeric)) => \"an alphanumeric string\""
+  [& {:keys [fixed-length min-length max-length char-gen]}]
+  (let [char-gen (or char-gen gen/char)]
+    (cond
+      fixed-length
+      (gen/fmap clojure.string/join (gen/vector char-gen fixed-length))
+
+      (and min-length max-length)
+      (gen/fmap clojure.string/join (gen/vector char-gen min-length max-length))
+
+      max-length
+      (gen/fmap clojure.string/join (gen/vector char-gen 0 max-length))
+
+      min-length
+      (gen/fmap clojure.string/join (gen/vector char-gen min-length (Integer/MAX_VALUE)))
+
+      :else
+      (gen/fmap clojure.string/join (gen/vector char-gen)))))
+
+(defrecord Optional [v])
+
+(def optional-key ->Optional)
+
+(defn gen-maybe-kv
+  "Either generate a tuple of key and value or an empty tuple"
+  [k gen-v]
+  (gen/one-of [(gen/return [])
+               (gen/tuple (gen/return k) gen-v)]))
+
+(defn map->generator
+  "a hash map generator, takes a map of keys and generators
+  key can be optional by wrapping in `optional-key` e.g.
+  (map->generator {:mandatory-key gen/string (optional-key :a-different-key) gen/int}"
+  [m]
+  (gen/fmap #(->> %
+                  (remove empty?)
+                  flatten
+                  (apply hash-map))
+            (apply gen/tuple
+                   (map (fn [[k v]]
+                          (if (instance? Optional k)
+                            (gen-maybe-kv (:v k) v)
+                            (gen/tuple (gen/return k) v)))
+                        m))))
