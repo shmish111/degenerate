@@ -131,7 +131,7 @@
   (map->generator {:mandatory-key gen/string (optional-key :a-different-key) gen/int}"
   [m]
   (gen/fmap #(->> %
-                  flatten
+                  (mapcat identity)
                   (apply hash-map))
             (apply gen/tuple
                    (map (fn [[k v]]
