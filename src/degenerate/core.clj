@@ -6,6 +6,11 @@
             [clj-time.format :as tf])
   (:import (java.util Date)))
 
+(def char-safe
+  "A set of characters that doesn't include all the dodgy ones before (char 32) but does include everything after that
+  you should really account for. Things such as Chinese and Thai characters."
+  (gen/fmap char (gen/choose 32 0xFFFF)))
+
 (def host-name-char
   "Generate alphanumeric characters."
   (gen/fmap char
