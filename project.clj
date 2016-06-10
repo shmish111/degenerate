@@ -1,4 +1,4 @@
-(defproject degenerate "0.1.5"
+(defproject degenerate "0.1.6-SNAPSHOT"
   :description "Useful generators for test.check"
   :url "https://github.com/shmish111/degenerate"
   :license {:name "Eclipse Public License"
