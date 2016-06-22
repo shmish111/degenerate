@@ -4,7 +4,8 @@
             [cheshire.core :as cheshire]
             [clj-time.coerce :as tc]
             [clj-time.format :as tf])
-  (:import (java.util Date)))
+  (:import (java.util Date)
+           (clojure.lang PersistentArrayMap)))
 
 (def char-safe
   "A set of characters that doesn't include all the dodgy ones before (char 32) but does include everything after that
@@ -140,7 +141,10 @@
                   (apply hash-map))
             (apply gen/tuple
                    (map (fn [[k v]]
-                          (if (instance? Optional k)
-                            (gen-maybe-kv (:v k) v)
-                            (gen/tuple (gen/return k) v)))
+                          (let [v (if (instance? PersistentArrayMap v)
+                                    (map->generator v)
+                                    v)]
+                            (if (instance? Optional k)
+                              (gen-maybe-kv (:v k) v)
+                              (gen/tuple (gen/return k) v))))
                         m))))
