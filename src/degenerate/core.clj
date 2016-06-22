@@ -5,7 +5,7 @@
             [clj-time.coerce :as tc]
             [clj-time.format :as tf])
   (:import (java.util Date)
-           (clojure.lang PersistentArrayMap)))
+           (clojure.lang APersistentMap)))
 
 (def char-safe
   "A set of characters that doesn't include all the dodgy ones before (char 32) but does include everything after that
@@ -141,7 +141,7 @@
                   (apply hash-map))
             (apply gen/tuple
                    (map (fn [[k v]]
-                          (let [v (if (instance? PersistentArrayMap v)
+                          (let [v (if (instance? APersistentMap v)
                                     (map->generator v)
                                     v)]
                             (if (instance? Optional k)
@@ -153,7 +153,7 @@
   "the same as clojure.test.check.generators/vector except that you can give it a map instead of a generator where the
   map is a map of keys and generators as used by map->generator"
   [v & args]
-  (let [generator (if (instance? PersistentArrayMap v)
+  (let [generator (if (instance? APersistentMap v)
                     (map->generator v)
                     v)]
     (apply gen/vector generator args)))
