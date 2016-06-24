@@ -28,7 +28,8 @@
   "Generate a valid DNS host name according to RFC 952"
   (gen/not-empty
    (gen/such-that (fn [v] (and (-> v (str/join) count (<= 253))
-                               (->> v first #{\. \- \0 \1 \2 \3 \4 \5 \6 \7 \8 \9} not)))
+                               (->> v first #{\. \- \0 \1 \2 \3 \4 \5 \6 \7 \8 \9} not)
+                               (->> v last #{\-} not)))
                   (gen/fmap (partial str/join ".") (gen/vector (host-name-string 1 63) 1 4))
                   100)))
 
