@@ -22,15 +22,18 @@
 (defn host-name-string
   "Generate strings that have a-z, 0-9 and -"
   [minimum maximum]
-  (gen/fmap str/join (gen/vector host-name-char minimum maximum)))
+  (gen/such-that
+   (fn [v] (and
+            (->> v first #{\. \- \0 \1 \2 \3 \4 \5 \6 \7 \8 \9} not)
+            (->> v last #{\-} not)))
+   (gen/fmap str/join (gen/vector host-name-char minimum maximum))
+   100))
 
 (def host-name
   "Generate a valid DNS host name according to RFC 952"
   (gen/not-empty
-   (gen/such-that (fn [v] (and (-> v (str/join) count (<= 253))
-                               (->> v first #{\. \- \0 \1 \2 \3 \4 \5 \6 \7 \8 \9} not)
-                               (->> v last #{\-} not)))
-                  (gen/fmap (partial str/join ".") (gen/vector (host-name-string 1 63) 1 4))
+   (gen/such-that (fn [v] (and (-> v (str/join) count (<= 253))))
+                  (gen/fmap (partial str/join \.) (gen/vector (host-name-string 1 63) 1 4))
                   100)))
 
 (def email-local-part
