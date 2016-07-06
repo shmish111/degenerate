@@ -8,9 +8,9 @@
            (clojure.lang APersistentMap)))
 
 (def char-safe
-  "A set of characters that doesn't include all the dodgy ones before (char 32) but does include everything after that
-  you should really account for. Things such as Chinese and Thai characters."
-  (gen/fmap char (gen/choose 32 0xFFFF)))
+  "A set of characters that excludes 'dodgy' control characters (before char 32 & char 127) but does include 
+  all other unicode characters (in the basic multilingual plane)"
+  (gen/fmap char (gen/such-that #(not= 127 %) (gen/choose 32 0xFFFF))))
 
 (def host-name-char
   "Generate alphanumeric characters."
