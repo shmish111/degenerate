@@ -8,9 +8,9 @@
            (clojure.lang APersistentMap)))
 
 (def char-safe
-  "A set of characters that excludes 'dodgy' control characters (before char 32 & char 127) but does include 
-  all other unicode characters (in the basic multilingual plane)"
-  (gen/fmap char (gen/such-that #(not= 127 %) (gen/choose 32 0xFFFF))))
+  "Selects from all characters (in the unicode basic multilingual plane) excluding 'dodgy' control characters.
+  This equates to the ranges 32-126 (ascii) and (160-0xFFFF) (extended Latin onwards)"
+  (gen/fmap #(char (if (<= 65 % 159) (- % 33) %)) (gen/choose 65 0xFFFF))
 
 (def host-name-char
   "Generate alphanumeric characters."
