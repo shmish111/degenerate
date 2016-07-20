@@ -10,7 +10,7 @@
 (def char-safe
   "Selects from all characters (in the unicode basic multilingual plane) excluding 'dodgy' control characters.
   This equates to the ranges 32-126 (ascii) and (160-0xFFFF) (extended Latin onwards)"
-  (gen/fmap #(char (if (<= 65 % 159) (- % 33) %)) (gen/choose 65 0xFFFF))
+  (gen/fmap #(char (if (<= 65 % 159) (- % 33) %)) (gen/choose 65 0xFFFF)))
 
 (def host-name-char
   "Generate alphanumeric characters."
