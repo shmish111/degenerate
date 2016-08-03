@@ -104,8 +104,8 @@
   (gen/generate (str)) => \"some crazy string based on gen/char\"
   (gen/generate (str :fixed-length 22)) => \"a string of lenghth 22\"
   (gen/generate (str :max-length 50)) => \"a string between 0 and 50 chars\"
-  (gen/generate (str :min-lenght 5)) => \"a string between 5 and MAX_INTEGER chars\"
-  (gen/generate (str :min-lenght 5 :max-length 50)) => \"a string between 5 and 50 chars\"
+  (gen/generate (str :min-length 5)) => \"a string between 5 and MAX_INTEGER chars\"
+  (gen/generate (str :min-length 5 :max-length 50)) => \"a string between 5 and 50 chars\"
   (gen/generate (str :char-gen gen/char-alphanumeric)) => \"an alphanumeric string\""
   [& {:keys [fixed-length min-length max-length char-gen]}]
   (let [char-gen (or char-gen gen/char)]
